@@ -3,11 +3,12 @@ const {
   getAllUsers,
   getUserByID,
   createUser,
-  deleteUser
+  deleteUser,
+  validateUser,
 } = require("../controllers/users.controller");
 const router = express.Router();
 
-router.route("/").get(getAllUsers).post(createUser);
+router.route("/").get(getAllUsers).post(validateUser, createUser);
 router.route("/:id").get(getUserByID).delete(deleteUser);
 
 module.exports = router;

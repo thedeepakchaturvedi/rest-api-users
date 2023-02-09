@@ -1,11 +1,21 @@
 const UsersData = require("../../data/users.json");
 const User = require("../models/users.model");
 
-const validateUser = (obj) => {
-  const keys = Object.keys(new User({}));
+const validateUser = (req, res, next) => {
+  //middleare
+  const obj = req.body;
+  const keysArr = ["id", "name", "introduction", "profileImage", "profileLink"];
   const objKeys = Object.keys(obj);
-  const ans = keys.every((ele) => objKeys.includes(ele));
-  return ans;
+  const ans = keysArr.every((ele) => objKeys.includes(ele));
+
+  if (!ans) {
+    // shortcircuit
+    return res.status(422).json({
+      message: "Invalid request body",
+    });
+  }
+  // else;
+  next();
 };
 
 const getAllUsers = (req, res) => {
@@ -23,14 +33,10 @@ const getUserByID = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const body = req.body;
-  if (validateUser(body)) {
-    const user = new User(body);
-    UsersData.push(user);
-    res.status(200).send(user);
-  } else {
-    res.status(500).send("Cannot Create User because of missing attributes");
-  }
+  const { body } = req;
+  const user = new User(body);
+  UsersData.push(user);
+  res.status(200).send(user);
 };
 
 const deleteUser = (req, res) => {
@@ -55,4 +61,5 @@ module.exports = {
   getUserByID,
   createUser,
   deleteUser,
+  validateUser //middleware
 };
